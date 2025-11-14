@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create / Edit Image</title>
+
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        background: linear-gradient(120deg, #f0f4ff, #f9fbff);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 500px;
+        background: white;
+        margin: auto;
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #222;
+      }
+
+      input {
+        width: 90%;
+        padding: 14px;
+        margin: 12px 0;
+        border-radius: 12px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+      }
+
+      input:focus {
+        border-color: #4b7bec;
+        outline: none;
+        box-shadow: 0 0 8px rgba(75, 123, 236, 0.3);
+      }
+
+      #preview {
+        width: 100%;
+        border-radius: 12px;
+        margin-top: 10px;
+        display: none;
+      }
+
+      button {
+        width: 80%;
+        padding: 14px;
+        display: flex;
+        justify-self: center;
+        justify-content: center;
+        align-self: center;
+        font-size: 16px;
+        background: #000000;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      button:hover {
+       background: white;
+        color: #000000;
+        border: 1px solid #000000;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2 id="formTitle">Add New Image</h2>
+
+      <input type="file" id="imageFile" accept="image/*" />
+      <img id="preview" />
+
+      <input type="text" id="name" placeholder="Image Name" />
+      <input type="text" id="desc" placeholder="Image Description" />
+
+      <button onclick="saveData()">Save</button>
+    </div>
+
+    <script>
+      const API = "https://6915b3cd84e8bd126afb0eca.mockapi.io/api/v2/imag";
+
+      const params = new URLSearchParams(window.location.search);
+      const mode = params.get("mode");
+      const editId = params.get("id");
+
+      let imageBase64 = "";
+
+      document
+        .getElementById("imageFile")
+        .addEventListener("change", function () {
+          const file = this.files[0];
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            imageBase64 = e.target.result;
+            const preview = document.getElementById("preview");
+            preview.src = imageBase64;
+            preview.style.display = "block";
+          };
+          reader.readAsDataURL(file);
+        });
+
+      if (mode === "edit" && editId) {
+        document.getElementById("formTitle").innerText = "Edit Image";
+        loadEdit();
+      }
+
+      async function loadEdit() {
+        const res = await fetch(`${API}/${editId}`);
+        const data = await res.json();
+
+        document.getElementById("name").value = data.imagename;
+        document.getElementById("desc").value = data.imagecontent;
+
+        imageBase64 = data.url;
+        const preview = document.getElementById("preview");
+        preview.src = data.url;
+        preview.style.display = "block";
+      }
+
+      async function saveData() {
+        const body = {
+          url: imageBase64,
+          imagename: document.getElementById("name").value,
+          imagecontent: document.getElementById("desc").value,
+        };
+
+        if (!body.url || !body.imagename || !body.imagecontent) {
+          alert("Please fill all fields and upload an image.");
+          return;
+        }
+
+        let method = mode === "edit" ? "PUT" : "POST";
+        let endpoint = mode === "edit" ? `${API}/${editId}` : API;
+
+        await fetch(endpoint, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+
+        window.location.href = "index.html";
+      }
+    </script>
+  </body>
+</html>

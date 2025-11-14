@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.1);
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        /* display: flex; */
+        /* justify-content: center; */
+        /* flex-direction: row; */
+        /* text-align: center; */
+        /* align-items: center; */
+        overflow: hidden;
+        border-bottom: 1px solid #ddd;
+        font-size: 15px;
+      }
+
+      th {
+        background: #000000;
+        color: white;
+        font-weight: 600;
+      }
+
+      img {
+        width: 70px;
+        height: 70px;
+        border-radius: 5px;
+        object-fit: cover;
+      }
+
+      button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        color: white;
+        font-size: 14px;
+      }
+
+      .edit-btn {
+        background: #ffffff;
+        color: #000000;
+        border: 1px solid #000000;
+      }
+
+      .delete-btn {
+        background: #000000;
+        color: white;
+      }
+      #sno {
+        text-align: center;
+        width: 50px;
+      }
+      .addclass {
+        text-align: center;
+        margin-bottom: 15px;
+      }
+      .add-btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        color: white;
+        font-size: 14px;
+        background: #000000;
+        color: white;
+        border: 1px solid #000000;
+      }
+      .add-btn:hover {
+        background: #ffffff;
+        color: #000000;
+        border: 1px solid #000000;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Image CRUD App (Table View)</h2>
+
+    <div class="addclass">
+      <button class="add-btn" onclick="goToCreatePage()"> Add Image</button>
+    </div>
+
+    <table id="imageTable">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Image</th>
+          <th>Image Name</th>
+          <th>Image Content</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+
+    <script>
+      const API = "https://6915b3cd84e8bd126afb0eca.mockapi.io/api/v2/imag";
+      const tableBody = document.getElementById("tableBody");
+
+      function goToCreatePage() {
+        window.location.href = "form.html?mode=create";
+      }
+
+      function goToEditPage(id) {
+        window.location.href = `form.html?mode=edit&id=${id}`;
+      }
+
+      async function read() {
+        const res = await fetch(API);
+        const data = await res.json();
+        tableBody.innerHTML = "";
+
+        data.forEach((item, index) => {
+          tableBody.innerHTML += `
+      <tr>
+        <td id="sno">${index + 1}</td>
+        <td><img src="${item.url}" /></td>
+        <td>${item.imagename}</td>
+        <td>${item.imagecontent}</td>
+        <td>
+          <button class="edit-btn" onclick="goToEditPage('${
+            item.id
+          }')">Edit</button>
+          <button class="delete-btn" onclick="deleteItem('${
+            item.id
+          }')">Delete</button>
+        </td>
+      </tr>
+    `;
+        });
+      }
+
+      async function deleteItem(id) {
+        await fetch(`${API}/${id}`, { method: "DELETE" });
+        read();
+      }
+
+      read();
+    </script>
+  </body>
+</html>
