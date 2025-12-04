@@ -91,7 +91,7 @@
     <h2>Image CRUD App (Table View)</h2>
 
     <div class="addclass">
-      <button class="add-btn" onclick="goToCreatePage()"> Add Image</button>
+      <button class="add-btn" onclick="goToCreatePage()">Add Image</button>
     </div>
 
     <table id="imageTable">
@@ -108,7 +108,7 @@
     </table>
 
     <script>
-      const API = "https://6915b3cd84e8bd126afb0eca.mockapi.io/api/v2/imag";
+      const API = "https://6915b3cd84e8bd126afb0eca.mockapi.io/api/v1/imag";
       const tableBody = document.getElementById("tableBody");
 
       function goToCreatePage() {
@@ -139,8 +139,7 @@
             item.id
           }')">Delete</button>
         </td>
-      </tr>
-    `;
+      </tr> `;
         });
       }
 
